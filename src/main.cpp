@@ -1,18 +1,21 @@
 #include <Arduino.h>
 #include <math.h>
 
-const int thermistorPin = PA1;
+const int thermistorPin = PA0;
 const float seriesResistor = 22000.0;
 const float vcc = 3.29;
 
-// Values calculated from https://www.desmos.com/calculator/j0msjbrgxe
+// Values calculated from https://www.thinksrs.com/downloads/programs/therm%20calc/ntccalibrator/ntccalculator.html
+// See https://www.desmos.com/calculator/j0msjbrgxe
 float calculateTemperatureF(float resistance) {
-  return 932.9 - 76.9 * log(resistance);
+  float tempK = 1 / (1.346e-3 + 0.7368e-4 * log(resistance) + 6.833e-7 * pow(log(resistance), 3));
+  return (tempK - 273.15) * 1.8 + 32;
 }
 
 void setup() {
   Serial.begin(9600);
   pinMode(thermistorPin, INPUT);
+  analogReadResolution(12);
 }
 
 void loop() {
